@@ -1,0 +1,9 @@
+[MASTER]
+ignore=frontend,mlruns,models/saved_models
+load-plugins=pylint.extensions.docparams
+
+[MESSAGES CONTROL]
+disable=C0114,C0115,C0116,R0903,W0621,C0103
+
+[REPORTS]
+output-format=colorized

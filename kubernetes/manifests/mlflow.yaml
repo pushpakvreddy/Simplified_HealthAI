@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow:latest
+        command: ["mlflow", "ui", "--host", "0.0.0.0", "--backend-store-uri", "/app/mlruns"]
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: storage
+          mountPath: /app/mlruns
+          subPath: mlruns
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: health-ai-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+spec:
+  type: NodePort
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30501
+  selector:
+    app: mlflow

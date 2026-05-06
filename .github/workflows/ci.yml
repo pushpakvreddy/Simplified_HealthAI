@@ -1,0 +1,36 @@
+name: Health AI CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint pytest httpx
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Run Pylint
+      run: |
+        # Only lint the backend and models to avoid complex JS linting in this step
+        pylint backend/ models/ --disable=C,R,W0611,W0613 || true # true ensures CI doesn't fail on minor styling
+
+    - name: Run Pytest
+      run: |
+        export PYTHONPATH=$PYTHONPATH:.
+        pytest tests/

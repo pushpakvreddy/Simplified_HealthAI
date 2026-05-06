@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pandas
+numpy
+scikit-learn
+tensorflow
+pennylane
+mlflow
+pytest
+pylint
+python-multipart
+joblib
+matplotlib
+seaborn
+autoray==0.6.12

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: health-backend:latest # Assumes user has built this locally
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: storage
+          mountPath: /app/models
+          subPath: models
+        - name: storage
+          mountPath: /app/mlruns
+          subPath: mlruns
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: health-ai-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  type: NodePort
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 30800
+  selector:
+    app: backend
